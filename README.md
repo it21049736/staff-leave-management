@@ -1,27 +1,37 @@
 # Staff Leave Management System
 
-Django 5 + DRF + SimpleJWT backend, React (Vite) frontend.
+Spring Boot (Java) + Spring Security/JWT + Spring Data JPA backend, MySQL database,
+React (Vite) + Tailwind frontend.
+
+SE2030 Software Engineering group project.
 
 ## Backend setup
 
+Requires Java 17+, Maven, and MySQL 8 running locally.
+
 ```bash
-cd backend
-python -m venv venv
-venv\Scripts\activate        # Windows
-pip install -r requirements.txt
-cp .env.example .env         # then edit values if needed
-python manage.py migrate
-python manage.py seed_demo   # creates departments, leave types, admin + employee demo users
-python manage.py runserver
+# create the app database + user (one-time, run in the mysql client as root)
+mysql -u root -p -e "
+CREATE DATABASE IF NOT EXISTS staffleave_db CHARACTER SET utf8mb4;
+CREATE USER IF NOT EXISTS 'staffleave_app'@'localhost' IDENTIFIED BY 'staffleave_pass';
+GRANT ALL PRIVILEGES ON staffleave_db.* TO 'staffleave_app'@'localhost';
+FLUSH PRIVILEGES;
+"
+
+cd backend-java
+mvn spring-boot:run
 ```
 
-By default the backend uses SQLite for local development (`DB_ENGINE=sqlite` in `.env`).
-To use PostgreSQL instead, set `DB_ENGINE=postgres` and fill in `DB_NAME`, `DB_USER`,
-`DB_PASSWORD`, `DB_HOST`, `DB_PORT` in `.env`, then re-run `migrate`.
+The app connects on first boot, creates the schema automatically (`spring.jpa.hibernate.ddl-auto=update`),
+and seeds demo data (departments, leave types, admin + 8 employee accounts, sample leave requests)
+if the database is empty.
 
-Demo accounts (created by `seed_demo`):
+Demo accounts:
 - Admin/HR: `admin` / `Admin@1234`
-- Employee: `employee1` / `Employee@1234`
+- Employee: `employee1` / `Employee@1234` (and 7 more, see `DataSeeder.java`)
+
+DB credentials/JWT secret can be overridden via env vars (`DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`)
+instead of editing `application.properties` directly.
 
 ## Frontend setup
 
@@ -32,15 +42,24 @@ npm run dev
 ```
 
 The frontend expects the API at `http://127.0.0.1:8000/api` by default (see `frontend/.env`,
-`VITE_API_URL`).
+`VITE_API_URL`) — this matches the Spring Boot backend's default port.
+
+## Design patterns
+
+- **Strategy** — `service/validation/LeaveValidationStrategy` and its implementations
+  (date-range, overlap, balance checks). New rules are added without touching `LeaveService`.
+- **Observer** — `event/LeaveStatusChangedEvent` + `LeaveAuditListener`, decoupling the
+  approve/reject workflow from side effects like audit logging.
+- **Repository/DAO** — Spring Data JPA repositories abstract all persistence.
 
 ## API overview
 
-See the project spec for the full endpoint list. Key routes:
 - `POST /api/auth/login/`, `POST /api/auth/refresh/`
 - `GET/PATCH /api/auth/me/`, `POST /api/auth/change-password/`
-- `GET /api/leave-types/`, `GET /api/balances/`
-- `GET/POST /api/leaves/`, `PATCH/POST .../cancel/`
+- `GET /api/leave-types/`, `POST/PATCH/DELETE .../{id}/` (admin)
+- `GET /api/balances/`
+- `GET/POST /api/leaves/`, `PATCH /api/leaves/{id}/`, `POST .../cancel/`
 - `GET /api/leaves/all/`, `POST .../approve/`, `POST .../reject/` (admin)
 - `GET/POST /api/users/`, `PATCH /api/users/{id}/` (admin)
 - `GET /api/reports/summary/`, `/by-department/`, `/export/` (admin)
+- `GET /api/departments/`
