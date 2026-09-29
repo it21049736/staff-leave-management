@@ -34,7 +34,9 @@ export default function ReviewRequests() {
   const [busy, setBusy] = useState(false);
   const toast = useToast();
 
-  const load = () => getAllLeaves({}).then((data) => setRows(data.results ?? data));
+  // This page needs the whole company's leave history (for tabs + conflict
+  // detection across all requests), not one paginated page of it.
+  const load = () => getAllLeaves({ page_size: 200 }).then((data) => setRows(data.results ?? data));
 
   useEffect(() => {
     load();
@@ -51,7 +53,7 @@ export default function ReviewRequests() {
         (o) =>
           o.id !== r.id &&
           o.department_name === r.department_name &&
-          o.user_name !== r.user_name &&
+          o.user !== r.user &&
           rangesOverlap(r.from_date, r.to_date, o.from_date, o.to_date)
       );
       if (conflicts.length) map.set(r.id, conflicts);

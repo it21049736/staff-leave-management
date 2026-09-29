@@ -1,6 +1,7 @@
 package com.staffleave.controller;
 
 import com.staffleave.dto.LeaveTypeDto;
+import com.staffleave.dto.LeaveTypeUpdateRequest;
 import com.staffleave.entity.LeaveType;
 import com.staffleave.exception.BusinessRuleException;
 import com.staffleave.repository.LeaveRequestRepository;
@@ -38,12 +39,17 @@ public class LeaveTypeController {
 
     @PatchMapping("/{id}/")
     @PreAuthorize("hasRole('ADMIN')")
-    public LeaveTypeDto update(@PathVariable Long id, @RequestBody LeaveTypeDto req) {
+    public LeaveTypeDto update(@PathVariable Long id, @RequestBody LeaveTypeUpdateRequest req) {
         LeaveType existing = leaveTypeRepository.findById(id)
                 .orElseThrow(() -> new BusinessRuleException("Leave type not found."));
-        if (req.getName() != null) existing.setName(req.getName());
-        existing.setDefaultDays(req.getDefaultDays());
-        existing.setRequiresDocument(req.isRequiresDocument());
+        if (req.getName() != null) {
+            if (req.getName().isBlank()) {
+                throw new com.staffleave.exception.FieldValidationException("name", "Name must not be blank.");
+            }
+            existing.setName(req.getName());
+        }
+        if (req.getDefaultDays() != null) existing.setDefaultDays(req.getDefaultDays());
+        if (req.getRequiresDocument() != null) existing.setRequiresDocument(req.getRequiresDocument());
         return LeaveTypeDto.from(leaveTypeRepository.save(existing));
     }
 

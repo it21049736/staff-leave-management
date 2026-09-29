@@ -1,5 +1,6 @@
 package com.staffleave.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -13,5 +14,6 @@ public class LeaveRequestUpsert {
     private LocalDate fromDate;
     @NotNull
     private LocalDate toDate;
+    @NotBlank(message = "Please provide a reason for this leave request.")
     private String reason;
 }

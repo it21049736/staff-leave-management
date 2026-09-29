@@ -29,7 +29,7 @@ export default function LeaveRecords() {
   }, []);
 
   useEffect(() => {
-    const params = { page };
+    const params = { page, page_size: PAGE_SIZE };
     if (status) params.status = status;
     if (dept) params.dept = dept;
     if (leaveType) params.leave_type = leaveType;

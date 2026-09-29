@@ -4,6 +4,7 @@ import com.staffleave.dto.UserDto;
 import com.staffleave.dto.UserUpsertDtos.CreateUserRequest;
 import com.staffleave.dto.UserUpsertDtos.UpdateUserRequest;
 import com.staffleave.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public UserDto create(@RequestBody CreateUserRequest req) {
+    public UserDto create(@Valid @RequestBody CreateUserRequest req) {
         return UserDto.from(userService.create(req));
     }
 

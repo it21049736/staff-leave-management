@@ -41,8 +41,10 @@ export default function Dashboard() {
 
   const load = () => {
     getSummaryReport().then(setSummary);
-    getAllLeaves({ status: "pending" }).then((data) => setPendingAll(data.results ?? data));
-    getAllLeaves({ status: "approved" }).then((data) => {
+    // page_size: 200 - this panel needs every pending/approved request to paginate and
+    // filter correctly client-side, not just the first paginated page from the API.
+    getAllLeaves({ status: "pending", page_size: 200 }).then((data) => setPendingAll(data.results ?? data));
+    getAllLeaves({ status: "approved", page_size: 200 }).then((data) => {
       const rows = data.results ?? data;
       setAwayToday(rows.filter((r) => r.from_date <= TODAY && TODAY <= r.to_date).slice(0, 5));
     });

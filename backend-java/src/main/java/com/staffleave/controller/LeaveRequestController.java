@@ -86,9 +86,11 @@ public class LeaveRequestController {
             @RequestParam(name = "from_date", required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(name = "to_date", required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) LocalDate toDate,
             @RequestParam(required = false) String q,
-            @RequestParam(defaultValue = "1") int page) {
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(name = "page_size", defaultValue = "20") int pageSize) {
 
-        var result = leaveService.search(status, dept, leaveType, fromDate, toDate, q, null, page, 20);
+        int cappedPageSize = Math.min(Math.max(pageSize, 1), 200);
+        var result = leaveService.search(status, dept, leaveType, fromDate, toDate, q, null, page, cappedPageSize);
         var dtos = result.getContent().stream().map(this::toDto).toList();
         return new PagedResponse<>(result.getTotalElements(), dtos);
     }
