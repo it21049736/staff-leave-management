@@ -2,11 +2,14 @@
 frontend/node_modules/
 frontend/dist/
 frontend/.env
+frontend/.env.local
+npm-debug.log*
 
 # Java / Maven
 backend-java/target/
 backend-java/uploads/
 *.class
+*.log
 
 # IDE / OS
 .idea/
