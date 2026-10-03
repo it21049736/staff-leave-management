@@ -310,6 +310,7 @@ export default function ReviewRequests() {
                               disabled={busy}
                               className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white border border-emerald-200 transition-all disabled:opacity-40"
                               title="Approve"
+                              aria-label="Approve request"
                               onClick={() => act(row.id, "approve")}
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -320,6 +321,7 @@ export default function ReviewRequests() {
                               disabled={busy}
                               className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200 transition-all disabled:opacity-40"
                               title="Reject"
+                              aria-label="Reject request"
                               onClick={() => act(row.id, "reject")}
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
