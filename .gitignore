@@ -5,6 +5,7 @@ frontend/.env
 
 # Java / Maven
 backend-java/target/
+backend-java/uploads/
 *.class
 
 # IDE / OS

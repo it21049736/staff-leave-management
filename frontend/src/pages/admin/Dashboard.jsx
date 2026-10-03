@@ -5,7 +5,7 @@ import StatCard from "../../components/StatCard";
 import LeaveTable from "../../components/LeaveTable";
 import Modal from "../../components/Modal";
 import { useToast } from "../../components/Toast";
-import { initials, avatarTone } from "../../utils/avatar";
+import Avatar from "../../components/Avatar";
 import { dotTone } from "../../utils/tags";
 
 const PAGE_SIZE = 4;
@@ -275,13 +275,10 @@ export default function Dashboard() {
             <div className="space-y-3">
               {awayToday.length === 0 && <p className="text-xs text-slate-400">Everyone is in today.</p>}
               {awayToday.map((row) => {
-                const tone = avatarTone(row.user_name);
                 return (
                   <div key={row.id} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
                     <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full font-semibold text-xs flex items-center justify-center ${tone.bg} ${tone.text}`}>
-                        {initials(row.user_name)}
-                      </div>
+                      <Avatar name={row.user_name} avatarUrl={row.avatar_url} size="sm" />
                       <div>
                         <div className="text-xs font-bold text-slate-800">{row.user_name}</div>
                         <div className="text-[11px] text-slate-400">

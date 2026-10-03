@@ -48,6 +48,9 @@ public class User {
     @Column(name = "is_active", nullable = false)
     private boolean active = true;
 
+    @Column(name = "avatar_path", length = 255)
+    private String avatarPath; // relative path under the upload dir, e.g. "avatars/3_a1b2c3d4.jpg"
+
     @Transient
     public String getFullName() {
         String first = firstName == null ? "" : firstName;

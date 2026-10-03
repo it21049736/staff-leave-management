@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { approveLeave, getAllLeaves, rejectLeave } from "../../api/leaves";
 import { useToast } from "../../components/Toast";
-import { initials, avatarTone } from "../../utils/avatar";
+import Avatar from "../../components/Avatar";
 import { dotTone } from "../../utils/tags";
 
 const TABS = [
@@ -228,7 +228,6 @@ export default function ReviewRequests() {
                   </tr>
                 )}
                 {tabRows.map((row) => {
-                  const tone = avatarTone(row.user_name);
                   const conflicts = clashMap.get(row.id);
                   const entitled = row.balance_entitled;
                   const used = row.balance_used ?? 0;
@@ -256,9 +255,7 @@ export default function ReviewRequests() {
                       )}
                       <td className="py-3.5 px-3">
                         <div className="flex items-center gap-3">
-                          <div className={`size-9 rounded-full font-bold flex items-center justify-center text-xs shrink-0 ring-1 ${tone.bg} ${tone.text} ${tone.ring}`}>
-                            {initials(row.user_name)}
-                          </div>
+                          <Avatar name={row.user_name} avatarUrl={row.avatar_url} size="md" ring />
                           <div className="flex flex-col">
                             <span className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{row.user_name}</span>
                             {row.designation && <span className="text-[11px] text-slate-500">{row.designation}</span>}
@@ -360,9 +357,7 @@ export default function ReviewRequests() {
             <>
               <div className="flex items-start justify-between border-b border-slate-200 pb-4">
                 <div className="flex items-center gap-3">
-                  <div className={`size-11 rounded-full font-bold flex items-center justify-center text-sm shrink-0 ring-2 ring-indigo-500/30 ${avatarTone(selected.user_name).bg} ${avatarTone(selected.user_name).text}`}>
-                    {initials(selected.user_name)}
-                  </div>
+                  <Avatar name={selected.user_name} avatarUrl={selected.avatar_url} size="lg" ring />
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="text-slate-900 text-base font-bold">{selected.user_name}</h3>

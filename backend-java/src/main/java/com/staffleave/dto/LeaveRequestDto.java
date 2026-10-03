@@ -11,6 +11,7 @@ public class LeaveRequestDto {
     private Long id;
     private Long user;
     private String userName;
+    private String avatarUrl;
     private String departmentName;
     private String designation;
     private Long leaveType;
@@ -36,6 +37,7 @@ public class LeaveRequestDto {
         dto.id = r.getId();
         dto.user = r.getUser().getId();
         dto.userName = r.getUser().getFullName();
+        dto.avatarUrl = AvatarUrl.from(r.getUser().getAvatarPath());
         dto.departmentName = r.getUser().getDepartment() != null ? r.getUser().getDepartment().getName() : null;
         dto.designation = r.getUser().getDesignation();
         dto.leaveType = r.getLeaveType().getId();

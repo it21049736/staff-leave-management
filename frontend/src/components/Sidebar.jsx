@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getAllLeaves } from "../api/leaves";
-import { initials } from "../utils/avatar";
+import Avatar from "./Avatar";
 
 const ICONS = {
   dashboard: (
@@ -111,9 +111,8 @@ export default function Sidebar() {
 
       <div className="p-4 border-t border-slate-100 bg-slate-50/60">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-full bg-slate-800 text-white font-semibold text-xs flex items-center justify-center ring-2 ring-indigo-500/20">
-            {initials(user?.full_name)}
-          </div>
+          <Avatar name={user?.full_name} avatarUrl={user?.avatar_url} size="md" ring />
+
           <div className="overflow-hidden">
             <div className="text-sm font-bold text-slate-900 truncate">{user?.full_name}</div>
             <div className="text-xs text-slate-500 truncate">{user?.email || (isAdmin ? "Admin / HR" : "Employee")}</div>

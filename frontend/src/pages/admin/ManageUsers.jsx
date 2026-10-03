@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createUser, getDepartments, getUsers, resetUserPassword, updateUser } from "../../api/users";
 import Modal from "../../components/Modal";
 import { useToast } from "../../components/Toast";
-import { initials, avatarTone } from "../../utils/avatar";
+import Avatar from "../../components/Avatar";
 import { tagTone } from "../../utils/tags";
 
 const LABEL = "text-xs font-semibold text-slate-600 mb-1.5 block";
@@ -112,14 +112,11 @@ export default function ManageUsers() {
               </tr>
             )}
             {users.map((u) => {
-              const tone = avatarTone(u.full_name || u.username);
               return (
                 <tr key={u.id} className="hover:bg-slate-50/60 transition-colors group">
                   <td className="py-3 pl-4 pr-2 whitespace-nowrap">
                     <div className="flex items-center gap-2.5">
-                      <div className={`w-8 h-8 rounded-full font-bold flex items-center justify-center text-[11px] shrink-0 ring-1 ${tone.bg} ${tone.text} ${tone.ring}`}>
-                        {initials(u.full_name)}
-                      </div>
+                      <Avatar name={u.full_name || u.username} avatarUrl={u.avatar_url} size="sm" ring />
                       <div>
                         <div className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{u.full_name}</div>
                         <div className="text-[11px] text-slate-400">@{u.username}</div>

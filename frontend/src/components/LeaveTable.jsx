@@ -1,5 +1,5 @@
 import StatusTag from "./StatusTag";
-import { initials, avatarTone } from "../utils/avatar";
+import Avatar from "./Avatar";
 import { tagTone, dotTone } from "../utils/tags";
 
 function formatShort(dateStr) {
@@ -39,15 +39,12 @@ export default function LeaveTable({ rows, showEmployee = false, actions, bare =
             </tr>
           )}
           {rows.map((row) => {
-            const tone = avatarTone(row.user_name || row.id);
             return (
               <tr key={row.id} className="hover:bg-slate-50/60 transition-colors group">
                 {showEmployee && (
                   <td className="py-3.5 pl-4 pr-2 whitespace-nowrap">
                     <div className="flex items-center gap-2.5">
-                      <div className={`w-8 h-8 rounded-full font-bold flex items-center justify-center text-[11px] shrink-0 ring-1 ${tone.bg} ${tone.text} ${tone.ring}`}>
-                        {initials(row.user_name)}
-                      </div>
+                      <Avatar name={row.user_name} avatarUrl={row.avatar_url} size="sm" ring />
                       <div className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
                         {row.user_name}
                       </div>

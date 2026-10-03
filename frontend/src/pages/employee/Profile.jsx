@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { changePassword, updateMe } from "../../api/auth";
+import { changePassword, removeAvatar, updateMe, uploadAvatar } from "../../api/auth";
 import { useToast } from "../../components/Toast";
-import { initials, avatarTone } from "../../utils/avatar";
+import Avatar from "../../components/Avatar";
+
+const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
+const ALLOWED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 const LABEL = "text-xs font-semibold text-slate-600 mb-1.5 block";
 const INPUT =
@@ -28,6 +31,49 @@ export default function Profile() {
   });
   const [pwForm, setPwForm] = useState({ old_password: "", new_password: "", confirm_password: "" });
   const [pwError, setPwError] = useState("");
+  const [avatarBusy, setAvatarBusy] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleAvatarPick = () => fileInputRef.current?.click();
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file later
+    if (!file) return;
+
+    if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+      toast("Only JPEG, PNG, or WebP images are allowed.", "error");
+      return;
+    }
+    if (file.size > MAX_AVATAR_BYTES) {
+      toast("Image must be 2MB or smaller.", "error");
+      return;
+    }
+
+    setAvatarBusy(true);
+    try {
+      const updated = await uploadAvatar(file);
+      setUser(updated);
+      toast("Profile photo updated.", "success");
+    } catch (err) {
+      toast(extractError(err, "Could not upload photo."), "error");
+    } finally {
+      setAvatarBusy(false);
+    }
+  };
+
+  const handleAvatarRemove = async () => {
+    setAvatarBusy(true);
+    try {
+      const updated = await removeAvatar();
+      setUser(updated);
+      toast("Profile photo removed.", "success");
+    } catch (err) {
+      toast(extractError(err, "Could not remove photo."), "error");
+    } finally {
+      setAvatarBusy(false);
+    }
+  };
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
@@ -56,19 +102,55 @@ export default function Profile() {
     }
   };
 
-  const tone = avatarTone(user?.full_name);
-
   return (
     <div className="max-w-lg space-y-6">
       <div className="flex items-center gap-4">
-        <div className={`w-16 h-16 rounded-full font-bold flex items-center justify-center text-xl shrink-0 ring-2 ring-indigo-500/20 ${tone.bg} ${tone.text}`}>
-          {initials(user?.full_name)}
+        <div className="relative shrink-0">
+          <Avatar name={user?.full_name} avatarUrl={user?.avatar_url} size="xl" ring />
+          <button
+            type="button"
+            onClick={handleAvatarPick}
+            disabled={avatarBusy}
+            title="Change photo"
+            className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center shadow-sm border-2 border-white transition-colors disabled:opacity-50"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+              <path d="M12 4v16m8-8H4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={handleAvatarChange}
+          />
         </div>
-        <div>
+        <div className="flex-1">
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">{user?.full_name}</h2>
           <p className="text-sm text-slate-500 mt-0.5">
             {user?.designation || (user?.role === "admin" ? "Admin / HR" : "Employee")}
           </p>
+          <div className="flex items-center gap-3 mt-1.5">
+            <button
+              type="button"
+              onClick={handleAvatarPick}
+              disabled={avatarBusy}
+              className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 disabled:opacity-50"
+            >
+              {avatarBusy ? "Uploading..." : "Change photo"}
+            </button>
+            {user?.avatar_url && (
+              <button
+                type="button"
+                onClick={handleAvatarRemove}
+                disabled={avatarBusy}
+                className="text-xs font-semibold text-slate-400 hover:text-rose-600 disabled:opacity-50"
+              >
+                Remove
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

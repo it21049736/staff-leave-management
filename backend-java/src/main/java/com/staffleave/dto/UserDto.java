@@ -15,6 +15,7 @@ public class UserDto {
     private Long department;
     private String departmentName;
     private String designation;
+    private String avatarUrl;
 
     @JsonProperty("is_active")
     private boolean active;
@@ -29,6 +30,7 @@ public class UserDto {
         dto.department = u.getDepartment() != null ? u.getDepartment().getId() : null;
         dto.departmentName = u.getDepartment() != null ? u.getDepartment().getName() : null;
         dto.designation = u.getDesignation();
+        dto.avatarUrl = AvatarUrl.from(u.getAvatarPath());
         dto.active = u.isActive();
         return dto;
     }

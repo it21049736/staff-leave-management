@@ -5,11 +5,13 @@ import com.staffleave.dto.UserDto;
 import com.staffleave.dto.UserUpsertDtos.UpdateProfileRequest;
 import com.staffleave.security.CurrentUser;
 import com.staffleave.service.AuthService;
+import com.staffleave.service.AvatarService;
 import com.staffleave.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -18,6 +20,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserService userService;
+    private final AvatarService avatarService;
     private final CurrentUser currentUser;
 
     @PostMapping("/login/")
@@ -43,5 +46,15 @@ public class AuthController {
     @PostMapping("/change-password/")
     public void changePassword(Authentication authentication, @Valid @RequestBody ChangePasswordRequest req) {
         authService.changePassword(currentUser.get(authentication), req.getOldPassword(), req.getNewPassword());
+    }
+
+    @PostMapping("/me/avatar/")
+    public UserDto uploadAvatar(Authentication authentication, @RequestParam("file") MultipartFile file) {
+        return UserDto.from(avatarService.upload(currentUser.get(authentication), file));
+    }
+
+    @DeleteMapping("/me/avatar/")
+    public UserDto removeAvatar(Authentication authentication) {
+        return UserDto.from(avatarService.remove(currentUser.get(authentication)));
     }
 }
