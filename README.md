@@ -44,13 +44,23 @@ npm run dev
 The frontend expects the API at `http://127.0.0.1:8000/api` by default (see `frontend/.env`,
 `VITE_API_URL`) — this matches the Spring Boot backend's default port.
 
+## Branching workflow
+
+- `master` is the stable, always-runnable branch.
+- New work happens on short-lived `feature/*` or `chore/*` branches, opened as a
+  pull request and merged back into `master` once it passes a manual review.
+
 ## Design patterns
 
 - **Strategy** — `service/validation/LeaveValidationStrategy` and its implementations
-  (date-range, overlap, balance checks). New rules are added without touching `LeaveService`.
+  (date-range, overlap, balance checks). Each rule is its own `@Order`ed `@Component`,
+  auto-wired into `LeaveService` as a `List<LeaveValidationStrategy>` — so a new rule is
+  added by dropping in another implementation, with no change to `LeaveService` itself.
 - **Observer** — `event/LeaveStatusChangedEvent` + `LeaveAuditListener`, decoupling the
-  approve/reject workflow from side effects like audit logging.
-- **Repository/DAO** — Spring Data JPA repositories abstract all persistence.
+  approve/reject workflow from side effects like audit logging. `LeaveService` only
+  publishes the event; it never knows what (if anything) listens for it.
+- **Repository/DAO** — Spring Data JPA repositories abstract all persistence, so services
+  depend on query methods rather than JDBC/SQL directly.
 
 ## API overview
 
@@ -63,3 +73,13 @@ The frontend expects the API at `http://127.0.0.1:8000/api` by default (see `fro
 - `GET/POST /api/users/`, `PATCH /api/users/{id}/` (admin)
 - `GET /api/reports/summary/`, `/by-department/`, `/export/` (admin)
 - `GET /api/departments/`
+
+## Backend tests
+
+```bash
+cd backend-java
+mvn test
+```
+
+Unit tests cover the Strategy-pattern validation rules (`service/validation/*Test`):
+date-range limits, overlap detection, and leave-balance checks.
