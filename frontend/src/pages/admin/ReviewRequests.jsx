@@ -449,6 +449,7 @@ export default function ReviewRequests() {
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-indigo-600 focus:ring-0 resize-none transition-colors"
                     placeholder="Add an approval note or coverage requirement..."
                     rows={2}
+                    maxLength={1000}
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                   />

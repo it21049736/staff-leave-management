@@ -98,7 +98,7 @@ public class LeaveRequestController {
     @PostMapping("/{id}/approve/")
     @PreAuthorize("hasRole('ADMIN')")
     public LeaveRequestDto approve(Authentication authentication, @PathVariable Long id,
-                                    @RequestBody(required = false) ReviewRequest req) {
+                                    @Valid @RequestBody(required = false) ReviewRequest req) {
         String remarks = req != null ? req.getRemarks() : "";
         return toDto(leaveService.approve(currentUser.get(authentication), id, remarks));
     }
@@ -106,7 +106,7 @@ public class LeaveRequestController {
     @PostMapping("/{id}/reject/")
     @PreAuthorize("hasRole('ADMIN')")
     public LeaveRequestDto reject(Authentication authentication, @PathVariable Long id,
-                                   @RequestBody(required = false) ReviewRequest req) {
+                                   @Valid @RequestBody(required = false) ReviewRequest req) {
         String remarks = req != null ? req.getRemarks() : "";
         return toDto(leaveService.reject(currentUser.get(authentication), id, remarks));
     }

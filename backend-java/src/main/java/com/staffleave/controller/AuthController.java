@@ -36,7 +36,7 @@ public class AuthController {
     }
 
     @PatchMapping("/me/")
-    public UserDto updateMe(Authentication authentication, @RequestBody UpdateProfileRequest req) {
+    public UserDto updateMe(Authentication authentication, @Valid @RequestBody UpdateProfileRequest req) {
         return UserDto.from(userService.updateProfile(currentUser.get(authentication), req));
     }
 

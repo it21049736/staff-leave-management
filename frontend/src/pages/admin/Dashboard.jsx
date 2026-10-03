@@ -339,6 +339,7 @@ export default function Dashboard() {
               className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors"
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
+              maxLength={1000}
               rows={3}
             />
           </div>

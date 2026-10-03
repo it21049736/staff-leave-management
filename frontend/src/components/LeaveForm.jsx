@@ -24,6 +24,10 @@ export default function LeaveForm({ initial, onSubmit, submitLabel = "Submit" })
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    if (form.from_date && form.to_date && form.to_date < form.from_date) {
+      setError("'To' date must be on or after the 'From' date.");
+      return;
+    }
     setSubmitting(true);
     try {
       await onSubmit({ ...form, leave_type: Number(form.leave_type) });
@@ -69,12 +73,20 @@ export default function LeaveForm({ initial, onSubmit, submitLabel = "Submit" })
         </div>
         <div>
           <label className={LABEL}>To</label>
-          <input type="date" name="to_date" value={form.to_date} onChange={handleChange} required className={INPUT} />
+          <input
+            type="date"
+            name="to_date"
+            min={form.from_date || undefined}
+            value={form.to_date}
+            onChange={handleChange}
+            required
+            className={INPUT}
+          />
         </div>
       </div>
       <div>
         <label className={LABEL}>Reason</label>
-        <textarea name="reason" value={form.reason} onChange={handleChange} rows={4} required className={INPUT} />
+        <textarea name="reason" maxLength={1000} value={form.reason} onChange={handleChange} rows={4} required className={INPUT} />
       </div>
       <button
         className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold shadow-sm transition-all disabled:opacity-50"

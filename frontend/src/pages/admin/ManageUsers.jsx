@@ -194,26 +194,27 @@ export default function ManageUsers() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={LABEL}>First name</label>
-                <input className={INPUT} name="first_name" value={form.first_name} onChange={handleChange} required />
+                <input className={INPUT} name="first_name" maxLength={150} value={form.first_name} onChange={handleChange} required />
               </div>
               <div>
                 <label className={LABEL}>Last name</label>
-                <input className={INPUT} name="last_name" value={form.last_name} onChange={handleChange} required />
+                <input className={INPUT} name="last_name" maxLength={150} value={form.last_name} onChange={handleChange} required />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={LABEL}>Username</label>
-                <input className={INPUT} name="username" value={form.username} onChange={handleChange} required />
+                <input className={INPUT} name="username" maxLength={150} value={form.username} onChange={handleChange} required />
               </div>
               <div>
                 <label className={LABEL}>Password</label>
-                <input className={INPUT} type="password" name="password" value={form.password} onChange={handleChange} required />
+                <input className={INPUT} type="password" name="password" minLength={8} value={form.password} onChange={handleChange} required />
+                <p className="text-[11px] text-slate-400 mt-1">At least 8 characters.</p>
               </div>
             </div>
             <div>
               <label className={LABEL}>Email</label>
-              <input className={INPUT} type="email" name="email" value={form.email} onChange={handleChange} />
+              <input className={INPUT} type="email" name="email" maxLength={254} value={form.email} onChange={handleChange} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -237,7 +238,7 @@ export default function ManageUsers() {
             </div>
             <div>
               <label className={LABEL}>Designation</label>
-              <input className={INPUT} name="designation" value={form.designation} onChange={handleChange} />
+              <input className={INPUT} name="designation" maxLength={100} value={form.designation} onChange={handleChange} />
             </div>
             <button
               className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold shadow-sm transition-all"

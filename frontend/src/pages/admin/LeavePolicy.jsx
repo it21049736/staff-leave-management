@@ -150,13 +150,14 @@ export default function LeavePolicy() {
             )}
             <div>
               <label className={LABEL}>Name</label>
-              <input className={INPUT} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+              <input className={INPUT} maxLength={40} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
             </div>
             <div>
               <label className={LABEL}>Default days per year (0 = unlimited)</label>
               <input
                 type="number"
                 min={0}
+                max={365}
                 className={INPUT}
                 value={form.default_days}
                 onChange={(e) => setForm({ ...form, default_days: e.target.value })}

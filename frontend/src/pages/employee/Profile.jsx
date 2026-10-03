@@ -8,7 +8,14 @@ const LABEL = "text-xs font-semibold text-slate-600 mb-1.5 block";
 const INPUT =
   "w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-colors";
 const BTN =
-  "inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold shadow-sm transition-all";
+  "inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold shadow-sm transition-all disabled:opacity-50";
+
+function extractError(err, fallback) {
+  const data = err.response?.data;
+  if (typeof data === "string") return data;
+  if (data) return Object.values(data).flat().join(" ");
+  return fallback;
+}
 
 export default function Profile() {
   const { user, setUser } = useAuth();
@@ -19,7 +26,8 @@ export default function Profile() {
     email: user?.email || "",
     designation: user?.designation || "",
   });
-  const [pwForm, setPwForm] = useState({ old_password: "", new_password: "" });
+  const [pwForm, setPwForm] = useState({ old_password: "", new_password: "", confirm_password: "" });
+  const [pwError, setPwError] = useState("");
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
@@ -27,19 +35,24 @@ export default function Profile() {
       const updated = await updateMe(form);
       setUser(updated);
       toast("Profile updated.", "success");
-    } catch {
-      toast("Could not update profile.", "error");
+    } catch (err) {
+      toast(extractError(err, "Could not update profile."), "error");
     }
   };
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
+    setPwError("");
+    if (pwForm.new_password !== pwForm.confirm_password) {
+      setPwError("New password and confirmation do not match.");
+      return;
+    }
     try {
       await changePassword(pwForm.old_password, pwForm.new_password);
-      setPwForm({ old_password: "", new_password: "" });
+      setPwForm({ old_password: "", new_password: "", confirm_password: "" });
       toast("Password changed.", "success");
     } catch (err) {
-      toast(err.response?.data?.old_password?.[0] || "Could not change password.", "error");
+      setPwError(extractError(err, "Could not change password."));
     }
   };
 
@@ -67,6 +80,7 @@ export default function Profile() {
               <label className={LABEL}>First name</label>
               <input
                 className={INPUT}
+                maxLength={150}
                 value={form.first_name}
                 onChange={(e) => setForm({ ...form, first_name: e.target.value })}
               />
@@ -75,6 +89,7 @@ export default function Profile() {
               <label className={LABEL}>Last name</label>
               <input
                 className={INPUT}
+                maxLength={150}
                 value={form.last_name}
                 onChange={(e) => setForm({ ...form, last_name: e.target.value })}
               />
@@ -85,6 +100,7 @@ export default function Profile() {
             <input
               type="email"
               className={INPUT}
+              maxLength={254}
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
@@ -93,6 +109,7 @@ export default function Profile() {
             <label className={LABEL}>Designation</label>
             <input
               className={INPUT}
+              maxLength={100}
               value={form.designation}
               onChange={(e) => setForm({ ...form, designation: e.target.value })}
             />
@@ -106,6 +123,11 @@ export default function Profile() {
       <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6">
         <h3 className="font-bold text-slate-900 text-base mb-4">Change Password</h3>
         <form className="flex flex-col gap-4" onSubmit={handlePasswordSubmit}>
+          {pwError && (
+            <div className="bg-rose-50 text-rose-700 border border-rose-200 rounded-lg px-3 py-2 text-xs font-medium">
+              {pwError}
+            </div>
+          )}
           <div>
             <label className={LABEL}>Current password</label>
             <input
@@ -121,8 +143,21 @@ export default function Profile() {
             <input
               type="password"
               className={INPUT}
+              minLength={8}
               value={pwForm.new_password}
               onChange={(e) => setPwForm({ ...pwForm, new_password: e.target.value })}
+              required
+            />
+            <p className="text-[11px] text-slate-400 mt-1">At least 8 characters.</p>
+          </div>
+          <div>
+            <label className={LABEL}>Confirm new password</label>
+            <input
+              type="password"
+              className={INPUT}
+              minLength={8}
+              value={pwForm.confirm_password}
+              onChange={(e) => setPwForm({ ...pwForm, confirm_password: e.target.value })}
               required
             />
           </div>
