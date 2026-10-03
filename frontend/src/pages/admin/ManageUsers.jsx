@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createUser, getDepartments, getUsers, updateUser } from "../../api/users";
+import { createUser, getDepartments, getUsers, resetUserPassword, updateUser } from "../../api/users";
 import Modal from "../../components/Modal";
 import { useToast } from "../../components/Toast";
 import { initials, avatarTone } from "../../utils/avatar";
@@ -26,6 +26,7 @@ export default function ManageUsers() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
+  const [resetResult, setResetResult] = useState(null); // { user, tempPassword }
   const toast = useToast();
 
   const load = () => getUsers().then(setUsers);
@@ -53,9 +54,23 @@ export default function ManageUsers() {
   };
 
   const toggleActive = async (user) => {
-    await updateUser(user.id, { is_active: !user.is_active });
-    toast(`User ${user.is_active ? "deactivated" : "activated"}.`, "success");
-    load();
+    try {
+      await updateUser(user.id, { is_active: !user.is_active });
+      toast(`User ${user.is_active ? "deactivated" : "activated"}.`, "success");
+      load();
+    } catch {
+      toast("Could not update user status.", "error");
+    }
+  };
+
+  const handleResetPassword = async (user) => {
+    if (!confirm(`Reset ${user.full_name}'s password? Their current password will stop working immediately.`)) return;
+    try {
+      const { temp_password } = await resetUserPassword(user.id);
+      setResetResult({ user, tempPassword: temp_password });
+    } catch {
+      toast("Could not reset password.", "error");
+    }
   };
 
   return (
@@ -146,12 +161,20 @@ export default function ManageUsers() {
                     </span>
                   </td>
                   <td className="py-3 pl-2 pr-4 whitespace-nowrap text-right">
-                    <button
-                      className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 transition-colors"
-                      onClick={() => toggleActive(u)}
-                    >
-                      {u.is_active ? "Deactivate" : "Activate"}
-                    </button>
+                    <div className="inline-flex items-center gap-1.5">
+                      <button
+                        className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 transition-colors"
+                        onClick={() => handleResetPassword(u)}
+                      >
+                        Reset Password
+                      </button>
+                      <button
+                        className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 transition-colors"
+                        onClick={() => toggleActive(u)}
+                      >
+                        {u.is_active ? "Deactivate" : "Activate"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );
@@ -223,6 +246,37 @@ export default function ManageUsers() {
               Create Employee
             </button>
           </form>
+        </Modal>
+      )}
+
+      {resetResult && (
+        <Modal title={`Password reset for ${resetResult.user.full_name}`} onClose={() => setResetResult(null)}>
+          <div className="flex flex-col gap-4">
+            <p className="text-sm text-slate-600">
+              Share this temporary password with <strong>{resetResult.user.full_name}</strong> directly — it won't be
+              shown again. They should change it after signing in.
+            </p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-sm font-mono text-slate-900 tracking-wide">
+                {resetResult.tempPassword}
+              </code>
+              <button
+                className="shrink-0 px-3 py-2.5 rounded-lg text-xs font-semibold border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 transition-colors"
+                onClick={() => {
+                  navigator.clipboard?.writeText(resetResult.tempPassword);
+                  toast("Copied to clipboard.", "success");
+                }}
+              >
+                Copy
+              </button>
+            </div>
+            <button
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold shadow-sm transition-all"
+              onClick={() => setResetResult(null)}
+            >
+              Done
+            </button>
+          </div>
         </Modal>
       )}
     </div>

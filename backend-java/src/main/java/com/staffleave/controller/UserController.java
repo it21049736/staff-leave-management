@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -32,5 +33,10 @@ public class UserController {
     @PatchMapping("/{id}/")
     public UserDto update(@PathVariable Long id, @RequestBody UpdateUserRequest req) {
         return UserDto.from(userService.update(id, req));
+    }
+
+    @PostMapping("/{id}/reset-password/")
+    public Map<String, String> resetPassword(@PathVariable Long id) {
+        return Map.of("temp_password", userService.resetPassword(id));
     }
 }

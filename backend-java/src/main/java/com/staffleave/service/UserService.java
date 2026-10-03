@@ -13,12 +13,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private static final String TEMP_PASSWORD_ALPHABET =
+            "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789"; // no 0/O/1/l/I - avoids misread-by-hand mistakes
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
@@ -73,5 +78,25 @@ public class UserService {
         if (req.getEmail() != null) user.setEmail(req.getEmail());
         if (req.getDesignation() != null) user.setDesignation(req.getDesignation());
         return userRepository.save(user);
+    }
+
+    /** Admin-triggered reset: generates a fresh random temporary password, stores its
+     *  hash, and returns the plaintext once so the admin can hand it to the employee
+     *  out-of-band (this app has no outbound email, so there's no "reset link" flow). */
+    public String resetPassword(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BusinessRuleException("User not found."));
+        String tempPassword = generateTempPassword();
+        user.setPassword(passwordEncoder.encode(tempPassword));
+        userRepository.save(user);
+        return tempPassword;
+    }
+
+    private String generateTempPassword() {
+        StringBuilder sb = new StringBuilder(12);
+        for (int i = 0; i < 12; i++) {
+            sb.append(TEMP_PASSWORD_ALPHABET.charAt(RANDOM.nextInt(TEMP_PASSWORD_ALPHABET.length())));
+        }
+        return sb.toString();
     }
 }

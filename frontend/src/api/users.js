@@ -6,5 +6,8 @@ export const createUser = (data) => client.post("/users/", data).then((r) => r.d
 
 export const updateUser = (id, data) => client.patch(`/users/${id}/`, data).then((r) => r.data);
 
+export const resetUserPassword = (id) =>
+  client.post(`/users/${id}/reset-password/`).then((r) => r.data);
+
 export const getDepartments = () =>
   client.get("/departments/").then((r) => r.data.results ?? r.data);
