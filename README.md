@@ -53,10 +53,14 @@ The frontend expects the API at `http://127.0.0.1:8000/api` by default (see `fro
 ## Design patterns
 
 - **Strategy** — `service/validation/LeaveValidationStrategy` and its implementations
-  (date-range, overlap, balance checks). New rules are added without touching `LeaveService`.
+  (date-range, overlap, balance checks). Each rule is its own `@Order`ed `@Component`,
+  auto-wired into `LeaveService` as a `List<LeaveValidationStrategy>` — so a new rule is
+  added by dropping in another implementation, with no change to `LeaveService` itself.
 - **Observer** — `event/LeaveStatusChangedEvent` + `LeaveAuditListener`, decoupling the
-  approve/reject workflow from side effects like audit logging.
-- **Repository/DAO** — Spring Data JPA repositories abstract all persistence.
+  approve/reject workflow from side effects like audit logging. `LeaveService` only
+  publishes the event; it never knows what (if anything) listens for it.
+- **Repository/DAO** — Spring Data JPA repositories abstract all persistence, so services
+  depend on query methods rather than JDBC/SQL directly.
 
 ## API overview
 
