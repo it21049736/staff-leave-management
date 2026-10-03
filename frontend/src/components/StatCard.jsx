@@ -35,7 +35,11 @@ export default function StatCard({ label, value, hint, badge, icon, tone = "acce
       <div className="mt-4">
         <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">{label}</span>
         <div className="flex items-baseline gap-2 mt-1">
-          <span className="text-3xl font-extrabold text-slate-900 tracking-tight">{value}</span>
+          {value === undefined || value === null ? (
+            <span className="h-8 w-14 rounded-md bg-slate-100 animate-pulse" aria-hidden="true" />
+          ) : (
+            <span className="text-3xl font-extrabold text-slate-900 tracking-tight">{value}</span>
+          )}
           {hint && <span className="text-xs text-slate-500">{hint}</span>}
         </div>
       </div>
