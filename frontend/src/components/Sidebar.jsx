@@ -65,9 +65,7 @@ export default function Sidebar() {
     <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 z-20">
       <div className="p-5 flex flex-col h-full overflow-y-auto">
         <div className="flex items-center gap-3 px-2 py-1 mb-8">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-indigo-200">
-            SL
-          </div>
+          <img src="/logo.png" alt="StaffLeave OS" className="w-10 h-10 rounded-xl object-cover shadow-md shadow-indigo-200" />
           <div>
             <h1 className="font-bold text-slate-900 tracking-tight text-base leading-tight">
               StaffLeave <span className="text-xs px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-semibold border border-indigo-100">OS</span>

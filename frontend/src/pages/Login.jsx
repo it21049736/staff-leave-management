@@ -49,8 +49,8 @@ export default function Login() {
           }}
         />
         <div className="relative">
-          <div className="w-12 h-12 rounded-xl bg-white/15 border border-white/30 flex items-center justify-center font-extrabold mb-6">
-            SL
+          <div className="w-14 h-14 rounded-xl bg-white/90 border border-white/30 flex items-center justify-center p-1.5 mb-6 shadow-lg">
+            <img src="/logo.png" alt="StaffLeave OS" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-4xl font-extrabold tracking-tight mb-3 max-w-md">Staff Leave Management</h1>
           <p className="text-white/85 text-base leading-relaxed max-w-sm mb-8">
