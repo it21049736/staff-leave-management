@@ -102,13 +102,6 @@ export default function Login() {
           >
             {submitting ? "Signing in..." : "Sign in"}
           </button>
-          <div className="border-t border-slate-200 pt-3.5 mt-1 text-xs text-slate-400 leading-relaxed">
-            Demo accounts &mdash; Admin/HR: <code className="bg-slate-100 px-1.5 py-0.5 rounded text-[11px]">admin</code> /{" "}
-            <code className="bg-slate-100 px-1.5 py-0.5 rounded text-[11px]">Admin@1234</code>
-            <br />
-            Employee: <code className="bg-slate-100 px-1.5 py-0.5 rounded text-[11px]">employee1</code> /{" "}
-            <code className="bg-slate-100 px-1.5 py-0.5 rounded text-[11px]">Employee@1234</code>
-          </div>
         </form>
       </div>
     </div>
