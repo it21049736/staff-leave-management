@@ -44,6 +44,12 @@ npm run dev
 The frontend expects the API at `http://127.0.0.1:8000/api` by default (see `frontend/.env`,
 `VITE_API_URL`) — this matches the Spring Boot backend's default port.
 
+## Branching workflow
+
+- `master` is the stable, always-runnable branch.
+- New work happens on short-lived `feature/*` or `chore/*` branches, opened as a
+  pull request and merged back into `master` once it passes a manual review.
+
 ## Design patterns
 
 - **Strategy** — `service/validation/LeaveValidationStrategy` and its implementations
