@@ -73,3 +73,13 @@ The frontend expects the API at `http://127.0.0.1:8000/api` by default (see `fro
 - `GET/POST /api/users/`, `PATCH /api/users/{id}/` (admin)
 - `GET /api/reports/summary/`, `/by-department/`, `/export/` (admin)
 - `GET /api/departments/`
+
+## Backend tests
+
+```bash
+cd backend-java
+mvn test
+```
+
+Unit tests cover the Strategy-pattern validation rules (`service/validation/*Test`):
+date-range limits, overlap detection, and leave-balance checks.
